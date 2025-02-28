@@ -29,3 +29,26 @@ Clarinet.test({
     assertEquals(block.receipts[0].result, '(ok u0)');
   },
 });
+
+Clarinet.test({
+  name: "Ensure cannot list product with zero quantity",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    const wallet_1 = accounts.get("wallet_1")!;
+    
+    let block = chain.mineBlock([
+      Tx.contractCall(
+        "product",
+        "list-product",
+        [
+          types.utf8("Test Product"),
+          types.utf8("Test Description"),
+          types.uint(1000000),
+          types.uint(0)
+        ],
+        wallet_1.address
+      )
+    ]);
+    
+    assertEquals(block.receipts[0].result, '(err u202)');
+  },
+});
